@@ -49,5 +49,67 @@
     <input type="hidden">
 </form>
 
+<br>
+
+<div class="row pt-5">
+    <div class="col-sm-8">
+        <h5>Comments section</h5>
+    </div>
+</div>
+
+<!-- Add comment to the product -->
+    {% if user.is_authenticated %}
+    <form id="add_comment{{ product.id }}" method="post" action="{% url 'add_comment' product.id%}">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div class="col-sm-8">
+                <textarea class="form-control" name="comment_body" placeholder="Your comment..." rows="2"></textarea>
+            </div>
+            <br><br><br>
+            <div class="col-sm-8">
+                <a href="javascript:{document.getElementById('add_comment{{ product.id }}').submit()}" style="text-decoration: none !important">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Add comment
+                    </button>
+                </a>
+            </div>
+        </div>
+        <input type="hidden">
+    </form>
+    {% else %}
+    <div class="row">
+        <div class="col-sm-8">
+            <h6>To add comment, please login</h6>
+        </div>
+    </div>
+    {% endif %}
+
+    <br><br>
+    <!-- show comments section -->
+
+    {% for comment in comments.all %}
+
+        <div class="row">
+            <div class="col-sm-6">
+                <h6 style="display: inline">
+                    {{ comment.user }},
+                </h6>
+                <small class="text-muted">
+                    {{ comment.pub_date }}
+                </small>
+            </div>
+            <div class=" col-sm-2 text-right">
+                <span>
+                     (#{{ comment.id }})
+                </span>
+            </div>
+
+            <div class="col-8">
+                <hr style="margin-top: 0; margin-bottom: 0">
+                <h7>{{ comment.comment_body|linebreaks }}</h7>
+            </div>
+        </div>
+    <br>
+    {% endfor %}
 
 {% endblock %}

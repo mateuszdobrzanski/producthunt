@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Product, Upvote
+from .models import Product, Upvote, Comment
 from django.utils import timezone
 
 
@@ -44,9 +44,12 @@ def create(request):
         return render(request, 'products/create.html')
 
 
+# Show product details and comments
 def detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'products/detail.html', {'product': product})
+    comments = Comment.objects.filter(product_id=product_id)
+    return render(request, 'products/detail.html', {'product': product,
+                                                    'comments': comments})
 
 
 @login_required(login_url="/accounts/login")
@@ -62,4 +65,22 @@ def upvote(request, product_id):
         new_upvote.product = product
         new_upvote.voter = request.user
         new_upvote.save()
+        return redirect('/products/' + str(product.id))
+
+
+@login_required(login_url="/accounts/login")
+def add_comment(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, pk=product_id)
+        user = request.user
+        comment_body = request.POST['comment_body']
+        pub_date = timezone.datetime.now()
+
+        comment = Comment()
+        comment.product = product
+        comment.user = user
+        comment.comment_body = comment_body
+        comment.pub_date = pub_date
+        comment.save()
+
         return redirect('/products/' + str(product.id))

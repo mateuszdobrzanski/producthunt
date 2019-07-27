@@ -56,3 +56,11 @@ class Product(models.Model):
 class Upvote(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     voter = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    pub_date = models.DateTimeField()
+    comment_body = models.TextField(default="")
+
